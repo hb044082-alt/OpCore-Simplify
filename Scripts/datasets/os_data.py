@@ -1,35 +1,63 @@
-class macOSVersionInfo:
-    def __init__(self, name, macos_version, release_status = "final"):
-        self.name = name
-        self.darwin_version = (int(macos_version.split(".")[1]) + 4) if "10." in macos_version else (int(macos_version.split(".")[0]) + 9) if macos_version.startswith("1") else (int(macos_version.split(".")[0]) - 1)
-        self.macos_version = macos_version
-        self.release_status = release_status
+class MacOSVersionInfo {
+    constructor(name, macosVersion, releaseStatus = "final") {
+        this.name = name;
+        this.macosVersion = macosVersion;
+        this.releaseStatus = releaseStatus;
 
-macos_versions = [
-    macOSVersionInfo("High Sierra", "10.13"),
-    macOSVersionInfo("Mojave", "10.14"),
-    macOSVersionInfo("Catalina", "10.15"),
-    macOSVersionInfo("Big Sur", "11"),
-    macOSVersionInfo("Monterey", "12"),
-    macOSVersionInfo("Ventura", "13"),
-    macOSVersionInfo("Sonoma", "14"),
-    macOSVersionInfo("Sequoia", "15"),
-    macOSVersionInfo("Tahoe", "26")
-]
+        if (macosVersion.includes("10.")) {
+            this.darwinVersion = parseInt(macosVersion.split(".")[1], 10) + 4;
+        } else if (macosVersion.startsWith("1")) {
+            this.darwinVersion = parseInt(macosVersion.split(".")[0], 10) + 9;
+        } else {
+            this.darwinVersion = parseInt(macosVersion.split(".")[0], 10) - 1;
+        }
+    }
+}
 
-def get_latest_darwin_version(include_beta=True):
-    for macos_version in macos_versions[::-1]:
-        if include_beta:
-            return "{}.{}.{}".format(macos_version.darwin_version, 99, 99)
-        else:
-            if macos_version.release_status == "final":
-                return "{}.{}.{}".format(macos_version.darwin_version, 99, 99)
+const macosVersions = [
+    new MacOSVersionInfo("High Sierra", "10.13"),
+    new MacOSVersionInfo("Mojave", "10.14"),
+    new MacOSVersionInfo("Catalina", "10.15"),
+    new MacOSVersionInfo("Big Sur", "11"),
+    new MacOSVersionInfo("Monterey", "12"),
+    new MacOSVersionInfo("Ventura", "13"),
+    new MacOSVersionInfo("Sonoma", "14"),
+    new MacOSVersionInfo("Sequoia", "15"),
+    new MacOSVersionInfo("Tahoe", "26")
+];
 
-def get_lowest_darwin_version():
-    return "{}.{}.{}".format(macos_versions[0].darwin_version, 0, 0)
+function getLatestDarwinVersion(includeBeta = true) {
+    const reversed = [...macosVersions].reverse();
+    for (const macosVersion of reversed) {
+        if (includeBeta) {
+            return `${macosVersion.darwinVersion}.99.99`;
+        } else {
+            if (macosVersion.releaseStatus === "final") {
+                return `${macosVersion.darwinVersion}.99.99`;
+            }
+        }
+    }
+}
 
-def get_macos_name_by_darwin(darwin_version):
-    for data in macos_versions:
-        if data.darwin_version == int(darwin_version[:2]):
-            return "macOS {} {}{}".format(data.name, data.macos_version, "" if data.release_status == "final" else " (Beta)")
-    return None
+function getLowestDarwinVersion() {
+    return `${macosVersions[0].darwinVersion}.0.0`;
+}
+
+function getMacosNameByDarwin(darwinVersion) {
+    const majorPrefix = parseInt(darwinVersion.substring(0, 2), 10);
+    for (const data of macosVersions) {
+        if (data.darwinVersion === majorPrefix) {
+            const betaSuffix = data.releaseStatus === "final" ? "" : " (Beta)";
+            return `macOS ${data.name} ${data.macosVersion}${betaSuffix}`;
+        }
+    }
+    return null;
+}
+
+module.exports = {
+    MacOSVersionInfo,
+    macosVersions,
+    getLatestDarwinVersion,
+    getLowestDarwinVersion,
+    getMacosNameByDarwin
+};
